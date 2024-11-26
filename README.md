@@ -1,5 +1,5 @@
-<div style="text-align:center;">
-  <img src="screens/banner.jpg" /><br/>
+<div align="center">
+  <img src="screens/banner.png" /><br/>
   Simple Python/Firebase based website for book lovers to have their own website for book sharing and reviews
 </div>
 
@@ -13,6 +13,11 @@ Also contains an admin login which gives access to manage all user's books and a
 
 Feel free to customize and use but do not forget to keep credit for me :-)
 
+# Index
+- [Technology Stack](#technology-stack)
+- [How To Use](#how-to-use)
+- [Screenshots](#screenshots)
+
 # Technology Stack
 
 1. Python Flask (for backend code)
@@ -21,6 +26,8 @@ Feel free to customize and use but do not forget to keep credit for me :-)
 4. Google Firebase (Application and free friendly domain)
 
 # How To Use
+
+**Will add a better guide soon, but if you are tech savvy / programmer - the steps below should not be difficult to decipher
 
 1. Create a [Google Firebase](https://console.firebase.google.com) Account
 2. Create a project for the bookclub for hosting your site and database
@@ -42,4 +49,4 @@ Feel free to customize and use but do not forget to keep credit for me :-)
 # Screenshots
 
 
-Feel free to reach out to me if you need any help
+Feel free to reach out to me if you need any help.
