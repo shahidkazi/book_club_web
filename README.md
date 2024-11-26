@@ -48,5 +48,16 @@ Feel free to customize and use but do not forget to keep credit for me :-)
 
 # Screenshots
 
+<b>Desktop</b><br/><br/>
+<img src="screens/desktop-login.png" /><br/><br/>
+<img src="screens/desktop-register.png" /><br/><br/>
+<img src="screens/desktop-forgot-password.png" /><br/><br/>
+<img src="screens/desktop-home-page.png" /><br/><br/>
+<img src="screens/desktop-book-info.png" /><br/><br/>
+
+<b>Mobile</b><br/><br/>
+<img src="screens/mobile-login.png" width="40%" /><br/><br/>
+<img src="screens/mobile-home-page.png" width="40%" /><br/><br/>
+<img src="screens/mobile-book-info.png" width="40%" /><br/><br/>
 
 Feel free to reach out to me if you need any help.
