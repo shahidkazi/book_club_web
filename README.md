@@ -22,13 +22,13 @@ Feel free to customize and use but do not forget to keep credit for me :-)
 
 # How To Use
 
-1. Create a Google Firebase Account (console.firebase.google.com)
+1. Create a [Google Firebase](https://console.firebase.google.com) Account
 2. Create a project for the bookclub for hosting your site and database
 3. Once the account is created, go to 'Hosting' and add a new web app. Choose a name wisely since this will become part of the url (e.g. bookclub.web.app)
-4. Go to Firestore database and create a new database, use 'default' database, since this is part of the Free Tier (refer to https://firebase.google.com/docs/firestore/quickstart)
+4. Go to Firestore database and create a new database, use 'default' database, since this is part of the Free Tier (refer to [Firebase QuickStart](https://firebase.google.com/docs/firestore/quickstart))
 5. Note the credentials for the database to be updated to the website code
 6. In the console, on the top left 'Project Overview' go to Usage and Billing and change from Free Tier to Pay as You Go Blaze plan by adding a payment method (dont worry it wont be too expensive unless you have a very heavy usage - I pay less than $0.50 per month for 17+ users) on a live imeplementation.
-7. The project will also be available in Google Cloud. Go to https://console.cloud.google.com to validate
+7. The project will also be available in [Google Cloud Console](https://console.cloud.google.com)
 8. Clone and download the code to your local machine
 9. If you want to modify code/update site locally then you need
    - Python
