@@ -1,0 +1,18 @@
+{
+  "hosting": {
+    "site": "site name created in forebase",
+    "public": "static",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "redirects": [
+      {
+        "source": "/",
+        "destination": "url of the app from google cloud run",
+        "type": 301
+      }
+    ]
+  }
+}

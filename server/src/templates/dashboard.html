@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:image" content="{{ url_for('static', filename='bookworm.png') }}">
+    <meta property="og:description" content="Books, Laughs and Friendships...">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <title>Not So Serious Bookworms</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .hiddenRow { padding: 0 !important; }
+        .table td, .table th { vertical-align: middle; }
+        .collapse .container { padding-top: 10px; padding-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="container mt-2">
+    <div class="banner">
+        <img src="{{ url_for('static', filename='banner.png') }}" alt="Banner Image">
+    </div>
+
+    <div class="container mt-3 mb-3 px-0 py-0">
+        <div class="card bg-light shadow-sm p-2">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                    <i class="fas fa-home"></i>
+                </a>
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle custom-button" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="{{ url_for('static', filename='profile.png') }}" alt="Profile" class="rounded-circle" style="width: 30px; height: 30px;"> {{ current_user.name }}
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        {% if current_user.is_admin() %}
+                            <a class="dropdown-item" href="{{ url_for('manage_genres') }}">Manage Genres</a>
+                        {% else %}
+                            <a class="dropdown-item" href="{{ url_for('user_books', user_id=current_user.id) }}">My Books</a>
+                        {% endif %}
+                        <a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show mt-3" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    
+        <div class="card mt-3">
+            <div class="card-header d-flex align-items-center" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#filtersCollapse" aria-expanded="false" aria-controls="filtersCollapse">
+                <span><strong>Filters</strong></span>
+                <i class="fas ms-auto fa-angle-double-down" id="toggleIcon"></i>
+            </div>
+            
+            <div id="filtersCollapse" class="collapse">
+                <div class="card-body">
+                    <form method="GET" action="{{ url_for('dashboard') }}">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="title">Search by Title</label>
+                                <input type="text" name="title" id="title" class="form-control" placeholder="Enter title" value="{{ request.args.get('title', '') }}">
+                            </div>
+        
+                            <div class="col-md-4 mb-3">
+                                <label for="added_by">Added By</label>
+                                <select name="added_by" id="added_by" class="form-select">
+                                    <option value="">All Users</option>
+                                    {% for user in users %}
+                                        <option value="{{ user.id }}" {% if request.args.get('added_by') == user.id %}selected{% endif %}>{{ user.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="genre">Genre</label>
+                                <select name="genre" id="genre" class="form-select">
+                                    <option value="">All Genres</option>
+                                    {% for genre in genres %}
+                                        <option value="{{ genre }}" {% if request.args.get('genre') == genre %}selected{% endif %}>{{ genre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-3">
+                            <button type="submit" class="btn btn-primary">Filter Books</button>
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Reset Filters</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-3 d-flex justify-content-between">
+        <form method="GET" id="sortingForm">
+            <input type="hidden" name="title" value="{{ request.args.get('title', '') }}">
+            <input type="hidden" name="added_by" value="{{ request.args.get('added_by', '') }}">
+            <input type="hidden" name="genre" value="{{ request.args.get('genre', '') }}">
+    
+            <select name="sort_by" class="form-select d-inline-block" style="width: auto;" onchange="this.form.submit()">
+                <option value="title" {% if sort_by == 'title' %}selected{% endif %}>Title</option>
+                <option value="author" {% if sort_by == 'author' %}selected{% endif %}>Author</option>
+                <option value="genre" {% if sort_by == 'genre' %}selected{% endif %}>Genre</option>
+                <option value="rating" {% if sort_by == 'rating' %}selected{% endif %}>Rating</option>
+                <option value="user" {% if sort_by == 'user' %}selected{% endif %}>Member</option>
+            </select>
+    
+            <select name="sort_order" class="form-select d-inline-block" style="width: auto;" onchange="this.form.submit()">
+                <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>Ascending</option>
+                <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>Descending</option>
+            </select>
+        </form>
+
+        <div class="col-auto">
+            <a href="{{ url_for('add_book') }}" class="btn btn-success" title="Add New Book">
+                <i class="fas fa-plus"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th class="d-table-cell d-md-none" style="width: 5%;"></th>
+                    <th>Title</th>
+                    <th class="d-none d-md-table-cell">Author</th>
+                    <th class="d-none d-md-table-cell">Genre</th>
+                    <th class="d-none d-md-table-cell">Rating</th>
+                    <th class="d-none d-md-table-cell">Member</th>
+                    <th class="d-none d-md-table-cell">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in books %}
+                <tr>
+                    <td class="text-center align-middle d-table-cell d-md-none" data-toggle="collapse" data-target="#book-details-{{ book.id }}" aria-expanded="false">
+                        <i class="fas fa-chevron-down"></i>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('view_book', book_id=book.id) }}" style="text-decoration: none; color: inherit;">
+                            {{ book.title }}
+                        </a>
+                    </td>
+                    <td class="d-none d-md-table-cell">{{ book.author }}</td>
+                    <td class="d-none d-md-table-cell">{{ book.genre }}</td>
+                    <td class="d-none d-md-table-cell">
+                        {% for star in range(book.rating) %}
+                            <i class="fas fa-star text-warning"></i>
+                        {% endfor %}
+                        {% for star in range(5 - book.rating) %}
+                            <i class="far fa-star text-warning"></i>
+                        {% endfor %}
+                    </td>
+                    <td class="d-none d-md-table-cell">
+                        <a href="{{ url_for('user_books', user_id=book.user_id) }}" style="text-decoration: none; color: inherit;">
+                            {{ book.user }}
+                        </a>
+                    </td>
+                    <td class="d-none d-md-table-cell">
+                        {% if book.user_id == current_user.id or current_user.is_admin() %}
+                        <a href="{{ url_for('edit_book', book_id=book.id) }}" class="btn btn-warning btn-sm" title="Edit Book">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form action="{{ url_for('delete_book', book_id=book.id) }}" method="post" style="display:inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-danger btn-sm" title="Delete Book" onclick="return confirm('Are you sure you want to delete this book?');">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr class="d-md-none">
+                    <td colspan="7" class="hiddenRow">
+                        <div id="book-details-{{ book.id }}" class="collapse">
+                            <div class="container py-2">
+                                <p><strong>Author:</strong> {{ book.author }}</p>
+                                <p><strong>Genre:</strong> {{ book.genre }}</p>
+                                <p><strong>Rating:</strong> 
+                                    {% for star in range(book.rating) %}
+                                        <i class="fas fa-star text-warning"></i>
+                                    {% endfor %}
+                                    {% for star in range(5 - book.rating) %}
+                                        <i class="far fa-star text-warning"></i>
+                                    {% endfor %}
+                                </p>
+                                <p><strong>Added by:</strong> 
+                                    <a href="{{ url_for('user_books', user_id=book.user_id) }}">{{ book.user }}</a>
+                                </p>
+                                {% if book.user_id == current_user.id or current_user.is_admin() %}
+                                <div>
+                                    <a href="{{ url_for('edit_book', book_id=book.id) }}" class="btn btn-warning btn-sm">Edit Book</a>
+                                    <form action="{{ url_for('delete_book', book_id=book.id) }}" method="post" style="display:inline;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this book?');">Delete Book</button>
+                                    </form>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-center mb-3">
+        Page {{ page }} of {{ total_pages }}
+    </div>
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if page == 1 %}disabled{% endif %}">
+                <a class="page-link" href="?page={{ page - 1 }}&per_page={{ per_page }}&sort_by={{ sort_by }}&sort_order={{ sort_order }}">
+                    Previous
+                </a>
+            </li>
+
+            {% set start_page = 1 if page - 2 < 1 else page - 2 %}
+            {% set end_page = total_pages if page + 2 > total_pages else page + 2 %}
+
+            {% for p in range(start_page, end_page + 1) %}
+                <li class="page-item {% if p == page %}active{% endif %}">
+                    <a class="page-link" href="?page={{ p }}&per_page={{ per_page }}&sort_by={{ sort_by }}&sort_order={{ sort_order }}">
+                        {{ p }}
+                    </a>
+                </li>
+            {% endfor %}
+
+            <li class="page-item {% if page == total_pages %}disabled{% endif %}">
+                <a class="page-link" href="?page={{ page + 1 }}&per_page={{ per_page }}&sort_by={{ sort_by }}&sort_order={{ sort_order }}">
+                    Next
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<footer style="text-align: center; padding: 1em; font-size: 0.9em; color: #555;">
+    &copy; Not So Serious Bookworms | <a href="https://www.shahidscorner.com" target="_blank">Shahid Kazi</a>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#filtersCollapse').on('show.bs.collapse', function() {
+            $('#toggleIcon').removeClass('fa-chevron-down text-primary').addClass('fa-angle-double-up');
+        }).on('hide.bs.collapse', function() {
+            $('#toggleIcon').removeClass('fa-angle-double-up text-success').addClass('fa-angle-double-down');
+        });
+    });
+</script>
+
+</body>
+</html>

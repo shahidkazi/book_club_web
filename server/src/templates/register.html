@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:image" content="{{ url_for('static', filename='bookworm.png') }}">
+    <meta property="og:description" content="Books, Laughs and Friendships...">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <title>Register (Not So Serious Bookworms)</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <style>
+        footer { text-align: center; padding: 1em; font-size: 0.9em; color: #555; display: block;}
+        body {
+            background: url("{{ url_for('static', filename='banner_login.png') }}") center fixed;
+            background-size: cover;
+        }
+        .banner { opacity: 0; height: 120px; }
+
+        @media (max-width: 768px) {
+            body {
+                background: url("{{ url_for('static', filename='banner_mobile.png') }}") no-repeat center center fixed;
+                background-size: cover;
+            }
+
+            footer { display: none; }
+        }
+
+        .card { background-color: rgba(255, 255, 255, 1); }
+    </style>
+</head>
+<body>
+<div class="container mt-2">
+    <div class="banner">
+        &nbsp;
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="text-center mb-4">Register New Account</h2>
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+
+                    <form action="{{ url_for('register') }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email address (Username)</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirm_password" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Register</button>
+                        <a href="{{ url_for('login') }}" class="btn btn-secondary w-100 mt-2">Already have an account? Login</a>
+
+                        <footer class="text-muted small">
+                            &copy; Not So Serious Bookworms | <a href="https://www.shahidscorner.com" target="_blank">Shahid Kazi</a>
+                        </footer>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.querySelector('form').addEventListener('submit', function(event) {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+        
+        if (password.length < 8) {
+            alert('Password must be at least 8 characters long.');
+            event.preventDefault();
+            return;
+        }
+        
+        if (password !== confirmPassword) {
+            alert('Passwords do not match.');
+            event.preventDefault();
+        }
+    });
+</script>
+</body>
+</html>

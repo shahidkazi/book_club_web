@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:image" content="{{ url_for('static', filename='bookworm.png') }}">
+    <meta property="og:description" content="Books, Laughs and Friendships...">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <title>Add New Book (Not So Serious Bookworms)</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container mt-2">
+        <div class="banner">
+            <img src="{{ url_for('static', filename='banner.png') }}" alt="Banner Image" class="img-fluid">
+        </div>
+
+        <div class="container mt-3 mb-3 px-0">
+            <div class="card bg-light shadow-sm p-2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                        <i class="fas fa-home"></i>
+                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle custom-button" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="{{ url_for('static', filename='profile.png') }}" alt="Profile" class="rounded-circle" style="width: 30px; height: 30px;"> {{ current_user.name }}
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            {% if current_user.is_admin() %}
+                                <a class="dropdown-item" href="{{ url_for('manage_genres') }}">Manage Genres</a>
+                            {% else %}
+                                <a class="dropdown-item" href="{{ url_for('user_books', user_id=current_user.id) }}">My Books</a>
+                            {% endif %}
+                            <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="d-flex justify-content-between align-items-center mb-3">        
+            <div class="mx-auto text-center">
+                <h3>Add a New Book</h3>
+            </div>
+        </div>
+    
+        <div class="container mt-2 px-0">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('add_book') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="mb-3">
+                            <label for="title" class="form-label fw-bold">Title</label>
+                            <input type="text" name="title" id="title" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="author" class="form-label fw-bold">Author</label>
+                            <input type="text" name="author" id="author" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="genre" class="form-label fw-bold">Genre</label>
+                            <select name="genre" id="genre" class="form-control" required>
+                                {% for genre in genres %}
+                                    <option value="{{ genre }}">{{ genre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="rating" class="form-label fw-bold">Rating</label>
+                            <select name="rating" id="rating" class="form-control" required>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="review" class="form-label fw-bold">Review</label>
+                            <textarea name="review" id="review" class="form-control" rows="4"></textarea>
+                        </div>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="submit" class="btn btn-primary me-md-2">Add Book</button>
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="text-center py-2 small text-muted">
+        &copy; Not So Serious Bookworms | <a href="https://www.shahidscorner.com" target="_blank">Shahid Kazi</a>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

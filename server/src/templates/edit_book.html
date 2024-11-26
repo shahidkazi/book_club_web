@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Edit Book (Not So Serious Bookworms)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:image" content="{{ url_for('static', filename='bookworm.png') }}">
+    <meta property="og:description" content="Books, Laughs and Friendships...">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container mt-2">
+        <div class="banner">
+            <img src="{{ url_for('static', filename='banner.png') }}" alt="Banner Image" class="img-fluid">
+        </div>
+
+        <div class="container mt-3 mb-3 px-0 py-0">
+            <div class="card bg-light shadow-sm p-2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                        <i class="fas fa-home"></i>
+                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle custom-button" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <img src="{{ url_for('static', filename='profile.png') }}" alt="Profile" class="rounded-circle" style="width: 30px; height: 30px;"> {{ current_user.name }}
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                            {% if current_user.is_admin() %}
+                                <a class="dropdown-item" href="{{ url_for('manage_genres') }}">Manage Genres</a>
+                            {% else %}
+                                <a class="dropdown-item" href="{{ url_for('user_books', user_id=current_user.id) }}">My Books</a>
+                            {% endif %}
+                            <a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="mx-auto text-center">
+                <h3>Update Book Details</h3>
+            </div>
+        </div>
+
+        <div class="container mt-2 px-0">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('edit_book', book_id=book.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="mb-3">
+                            <label for="title" class="form-label fw-bold">Title</label>
+                            <input type="text" name="title" id="title" class="form-control" value="{{ book.title }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="author" class="form-label fw-bold">Author</label>
+                            <input type="text" name="author" id="author" class="form-control" value="{{ book.author }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="genre" class="form-label fw-bold">Genre</label>
+                            <select name="genre" id="genre" class="form-control" required>
+                                {% for genre in genres %}
+                                    <option value="{{ genre }}" {% if book.genre == genre %}selected{% endif %}>{{ genre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="rating" class="form-label fw-bold">Rating</label>
+                            <select name="rating" id="rating" class="form-control" required>
+                                <option value="1" {% if book.rating == 1 %}selected{% endif %}>1</option>
+                                <option value="2" {% if book.rating == 2 %}selected{% endif %}>2</option>
+                                <option value="3" {% if book.rating == 3 %}selected{% endif %}>3</option>
+                                <option value="4" {% if book.rating == 4 %}selected{% endif %}>4</option>
+                                <option value="5" {% if book.rating == 5 %}selected{% endif %}>5</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="review" class="form-label fw-bold">Review</label>
+                            <textarea name="review" id="review" class="form-control" rows="4">{{ book.review }}</textarea>
+                        </div>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="submit" class="btn btn-primary me-md-2">Update Book</button>
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center py-3 mt-4" style="font-size: 0.9em; color: #555;">
+        &copy; Not So Serious Bookworms | <a href="https://www.shahidscorner.com" target="_blank">Shahid Kazi</a>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
